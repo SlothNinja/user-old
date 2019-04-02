@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
+	"bitbucket.org/SlothNinja/log"
 	"bitbucket.org/SlothNinja/restful"
-	"bitbucket.org/SlothNinja/sn/log"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
