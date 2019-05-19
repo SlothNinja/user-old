@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"crypto/sha1"
 	"encoding/gob"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"html/template"
@@ -17,12 +18,13 @@ import (
 
 	"bitbucket.org/SlothNinja/log"
 	"bitbucket.org/SlothNinja/restful"
+	"cloud.google.com/go/datastore"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/gofrs/uuid"
-
-	"cloud.google.com/go/datastore"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 )
 
 func init() {
@@ -33,6 +35,10 @@ func init() {
 }
 
 const fqdn = "www.slothninja.com"
+
+const (
+	GTMonster = "monsterid"
+)
 
 var namespaceUUID = uuid.NewV5(uuid.NamespaceDNS, fqdn)
 
@@ -140,13 +146,14 @@ type User0 struct {
 // }
 
 type Data struct {
-	Name               string    `json:"name" form:"name"`
-	LCName             string    `json:"lcname"`
-	Email              string    `json:"email" form:"email"`
-	GoogleID           string    `json:"googleid"`
-	XMPPNotifications  bool      `json:"xmppnotifications"`
-	EmailNotifications bool      `json:"emailnotifications" form:"emailNotifications"`
-	EmailReminders     bool      `json:"emailreminders"`
+	Name               string    `json:"name"`
+	LCName             string    `json:"lcName"`
+	Email              string    `json:"email"`
+	GoogleID           string    `json:"googleId"`
+	XMPPNotifications  bool      `json:"xmppNotifications"`
+	EmailNotifications bool      `json:"emailNotifications"`
+	EmailReminders     bool      `json:"emailReminders"`
+	GravType           string    `json:"gravType"`
 	Admin              bool      `json:"admin"`
 	JoinedAt           time.Time `json:"joinedAt"`
 	CreatedAt          time.Time `json:"createdAt"`
@@ -369,58 +376,40 @@ func AllQuery2(c *gin.Context) *datastore.Query {
 }
 
 func ByOldEntries(c *gin.Context, name, email string) (*User1, error) {
+	log.Debugf("Entering")
+	defer log.Debugf("Exiting")
+
+	log.Debugf("name: %s", name)
+	log.Debugf("email: %s", email)
+
 	client, err := Client(c)
 	if err != nil {
 		return nil, err
 	}
 
-	q1 := datastore.NewQuery(kind).Ancestor(RootKey()).Filter("LCName =", strings.ToLower(name)).KeysOnly()
-	q2 := datastore.NewQuery(kind).Ancestor(RootKey()).Filter("Email =", email).KeysOnly()
+	q := datastore.NewQuery(kind).Ancestor(RootKey()).Filter("Email =", email).KeysOnly()
 
-	ks1, err := client.GetAll(c, q1, nil)
+	ks, err := client.GetAll(c, q, nil)
 	if err != nil && err != datastore.ErrNoSuchEntity {
 		return nil, err
 	}
+	log.Debugf("ks: %#v", ks)
 
-	ks2, err := client.GetAll(c, q2, nil)
-	if err != nil && err != datastore.ErrNoSuchEntity {
-		return nil, err
-	}
-
-	var ks []*datastore.Key
-	for _, k1 := range ks1 {
-		ks = addUnique(ks, k1)
-	}
-
-	for _, k2 := range ks2 {
-		ks = addUnique(ks, k2)
-	}
-
-	var (
-		us []*User1
-		uk *datastore.Key
-	)
-	for _, k := range ks {
-		if k.Name != "" {
-			us = append(us, New1(""))
-			uk = k
-		}
-	}
-
-	if len(us) == 0 {
+	if len(ks) == 0 {
 		return nil, nil
 	}
 
-	if len(us) > 1 {
+	if len(ks) > 1 {
 		return nil, errors.New("too many entries found")
 	}
 
-	u1 := us[0]
-	if err := client.Get(c, uk, u1); err != nil {
+	u1 := New1("")
+	if err := client.Get(c, ks[0], u1); err != nil {
 		return nil, err
 	}
 
 	if strings.ToLower(u1.Email) == strings.ToLower(email) {
+		log.Debugf("found user: %#v", u1)
 		return u1, nil
 	}
 
@@ -512,11 +501,18 @@ func GravatarURL(email string, options ...string) string {
 		size = options[0]
 	}
 
+	hash, _ := emailHash(email)
+	return fmt.Sprintf("http://www.gravatar.com/avatar/%s?s=%s&d=monsterid", hash, size)
+}
+
+func emailHash(email string) (string, error) {
 	email = strings.ToLower(strings.TrimSpace(email))
 	hash := md5.New()
-	hash.Write([]byte(email))
-	md5string := fmt.Sprintf("%x", hash.Sum(nil))
-	return fmt.Sprintf("http://www.gravatar.com/avatar/%s?s=%s&d=monsterid", md5string, size)
+	_, err := hash.Write([]byte(email))
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%x", hash.Sum(nil)), nil
 }
 
 func (u *User2) Update(c *gin.Context, cu *User2) error {
@@ -943,14 +939,35 @@ func CountFrom(c *gin.Context) int {
 }
 
 type User2 struct {
-	Key     *datastore.Key `datastore:"__key__"`
+	Key     *datastore.Key `datastore:"__key__" json:"-"`
 	User0ID int64          `json:"user0id"`
 	User1ID string         `json:"user1id"`
 	Data
 }
 
 func (u *User2) ID() string {
+	if u == nil || u.Key == nil {
+		return ""
+	}
 	return u.Key.Name
+}
+
+func (u *User2) MarshalJSON() ([]byte, error) {
+	hash, err := emailHash(u.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	type u2 User2
+	return json.Marshal(struct {
+		ID        string `json:"id"`
+		EmailHash string `json:"emailHash"`
+		u2
+	}{
+		ID:        u.ID(),
+		EmailHash: hash,
+		u2:        u2(*u),
+	})
 }
 
 // // GetUID returns unique openID based string ID
@@ -1070,6 +1087,30 @@ func ByID(c *gin.Context, id string) (*User2, error) {
 	return u, err
 }
 
+func ByLCName(c *gin.Context, lcname string) (*User2, error) {
+	log.Debugf("Entering")
+	defer log.Debugf("Exiting")
+
+	client, err := Client(c)
+	if err != nil {
+		return nil, err
+	}
+
+	var us []*User2
+	ks, err := client.GetAll(c, datastore.NewQuery(kind).Filter("LCName =", lcname), &us)
+	if err != nil {
+		return nil, err
+	}
+	switch l := len(ks); l {
+	case 0:
+		return nil, nil
+	case 1:
+		return us[0], nil
+	default:
+		return nil, fmt.Errorf("too many users returned")
+	}
+}
+
 func ByParam(c *gin.Context, param string) (*User2, error) {
 	return ByID(c, c.Param(param))
 }
@@ -1095,8 +1136,16 @@ func ByKeys(c *gin.Context, ks []*datastore.Key) ([]*User2, error) {
 func Client(c *gin.Context) (*datastore.Client, error) {
 	log.Debugf("Entering")
 	defer log.Debugf("Exiting")
-	log.Debugf("project ID: %s", os.Getenv("DATASTORE_PROJECT_ID"))
-	return datastore.NewClient(c, "")
+	projectId := os.Getenv("DATASTORE_PROJECT_ID")
+	emulatorHost := "user.slothninja.com:8081"
+	log.Debugf("project ID: %s", projectId)
+	o1 := []option.ClientOption{
+		option.WithEndpoint(emulatorHost),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithInsecure()),
+		option.WithGRPCConnectionPool(50),
+	}
+	return datastore.NewClient(c, projectId, o1...)
 }
 
 func GetCUserHandler2(c *gin.Context) {
@@ -1118,18 +1167,43 @@ func GetCUserHandler2(c *gin.Context) {
 	WithCurrent(c, u)
 }
 
-// Use after GetUser2Handler handler
-func RequireLogin() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		cu := CurrentFrom(c)
-		if cu != nil {
-			return
-		}
-		log.Warningf("RequireLogin failed.")
-		c.Redirect(http.StatusSeeOther, "/")
-		c.Abort()
+func Current(c *gin.Context) *User2 {
+	log.Debugf("Entering")
+	defer log.Debugf("Exiting")
+
+	u := CurrentFrom2(c)
+	if u != nil {
+		return u
 	}
+
+	session := sessions.Default(c)
+	token, ok := SessionTokenFrom(session)
+	if !ok {
+		log.Warningf("missing token")
+		return nil
+	}
+
+	log.Debugf("token: %#v", token)
+
+	u, err := ByID(c, token.ID)
+	if err != nil {
+		log.Warningf("ByID err: %s", err)
+		return nil
+	}
+	WithCurrent(c, u)
+	return u
 }
+
+// Use after GetUser2Handler handler
+// func RequireLogin(c *gin.Context) {
+// 	cu := Current(c)
+// 	if cu != nil {
+// 		return
+// 	}
+// 	log.Warningf("RequireLogin failed.")
+// 	c.Redirect(http.StatusSeeOther, "/")
+// 	c.Abort()
+// }
 
 func (u *User) Link() template.HTML {
 	if u == nil {
@@ -1151,4 +1225,19 @@ func linkFor(uid string, name string) template.HTML {
 
 func pathFor(uid string) string {
 	return "/user/show/" + uid
+}
+
+// Declare a struct capable of handling any type of entity.
+// It implements the PropertyLoadSaver interface
+type arbitraryEntity struct {
+	properties []datastore.Property
+}
+
+func (e *arbitraryEntity) Load(ps []datastore.Property) error {
+	e.properties = ps
+	return nil
+}
+
+func (e *arbitraryEntity) Save() ([]datastore.Property, error) {
+	return e.properties, nil
 }
