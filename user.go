@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -23,8 +22,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/gofrs/uuid"
-	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 )
 
 func init() {
@@ -1136,16 +1133,17 @@ func ByKeys(c *gin.Context, ks []*datastore.Key) ([]*User2, error) {
 func Client(c *gin.Context) (*datastore.Client, error) {
 	log.Debugf("Entering")
 	defer log.Debugf("Exiting")
-	projectId := os.Getenv("DATASTORE_PROJECT_ID")
-	emulatorHost := "user.slothninja.com:8081"
-	log.Debugf("project ID: %s", projectId)
-	o1 := []option.ClientOption{
-		option.WithEndpoint(emulatorHost),
-		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithInsecure()),
-		option.WithGRPCConnectionPool(50),
-	}
-	return datastore.NewClient(c, projectId, o1...)
+	// projectId := os.Getenv("DATASTORE_PROJECT_ID")
+	// emulatorHost := "user.slothninja.com:8081"
+	// log.Debugf("project ID: %s", projectId)
+	// o1 := []option.ClientOption{
+	// 	option.WithEndpoint(emulatorHost),
+	// 	option.WithoutAuthentication(),
+	// 	option.WithGRPCDialOption(grpc.WithInsecure()),
+	// 	option.WithGRPCConnectionPool(50),
+	// }
+	// return datastore.NewClient(c, projectId, o1...)
+	return datastore.NewClient(c, "")
 }
 
 func GetCUserHandler2(c *gin.Context) {
