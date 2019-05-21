@@ -372,7 +372,7 @@ func AllQuery2(c *gin.Context) *datastore.Query {
 	return datastore.NewQuery(kind).Ancestor(rootKey())
 }
 
-func ByOldEntries(c *gin.Context, email string) (id0 int64, id1 string, gid string, found bool, err error) {
+func ByOldEntries(c *gin.Context, email string) (id0 int64, id1 string, gid string, joinedAt time.Time, found bool, err error) {
 	log.Debugf("Entering")
 	defer log.Debugf("Exiting")
 
@@ -380,19 +380,19 @@ func ByOldEntries(c *gin.Context, email string) (id0 int64, id1 string, gid stri
 
 	client, err := Client(c)
 	if err != nil {
-		return id0, id1, gid, found, err
+		return id0, id1, gid, joinedAt, found, err
 	}
 
 	q := datastore.NewQuery(kind).Ancestor(RootKey()).Filter("Email =", email).KeysOnly()
 
 	ks, err := client.GetAll(c, q, nil)
 	if err != nil && err != datastore.ErrNoSuchEntity {
-		return id0, id1, gid, found, err
+		return id0, id1, gid, joinedAt, found, err
 	}
 	log.Debugf("ks: %#v", ks)
 
 	if len(ks) == 0 {
-		return id0, id1, gid, found, nil
+		return id0, id1, gid, joinedAt, found, nil
 	}
 
 	for _, k := range ks {
@@ -404,9 +404,12 @@ func ByOldEntries(c *gin.Context, email string) (id0 int64, id1 string, gid stri
 			if gid == "" {
 				err := client.Get(c, k, u0)
 				if err != nil {
-					return id0, id1, gid, found, err
+					return id0, id1, gid, joinedAt, found, err
 				}
 				gid = u0.GoogleID
+				if joinedAt.IsZero() {
+					joinedAt = u0.CreatedAt
+				}
 			}
 		case k.Name != "":
 			found = true
@@ -415,13 +418,14 @@ func ByOldEntries(c *gin.Context, email string) (id0 int64, id1 string, gid stri
 			if gid == "" {
 				err := client.Get(c, k, u1)
 				if err != nil {
-					return id0, id1, gid, found, err
+					return id0, id1, gid, joinedAt, found, err
 				}
 				gid = u1.GoogleID
+				joinedAt = u1.JoinedAt
 			}
 		}
 	}
-	return id0, id1, gid, found, nil
+	return id0, id1, gid, joinedAt, found, nil
 }
 
 func addUnique(ks []*datastore.Key, k *datastore.Key) []*datastore.Key {
