@@ -372,45 +372,56 @@ func AllQuery2(c *gin.Context) *datastore.Query {
 	return datastore.NewQuery(kind).Ancestor(rootKey())
 }
 
-func ByOldEntries(c *gin.Context, name, email string) (*User1, error) {
+func ByOldEntries(c *gin.Context, email string) (id0 int64, id1 string, gid string, found bool, err error) {
 	log.Debugf("Entering")
 	defer log.Debugf("Exiting")
 
-	log.Debugf("name: %s", name)
 	log.Debugf("email: %s", email)
 
 	client, err := Client(c)
 	if err != nil {
-		return nil, err
+		return id0, id1, gid, found, err
 	}
 
 	q := datastore.NewQuery(kind).Ancestor(RootKey()).Filter("Email =", email).KeysOnly()
 
 	ks, err := client.GetAll(c, q, nil)
 	if err != nil && err != datastore.ErrNoSuchEntity {
-		return nil, err
+		return id0, id1, gid, found, err
 	}
 	log.Debugf("ks: %#v", ks)
 
 	if len(ks) == 0 {
-		return nil, nil
+		return id0, id1, gid, found, nil
 	}
 
-	if len(ks) > 1 {
-		return nil, errors.New("too many entries found")
+	for _, k := range ks {
+		switch {
+		case k.ID != 0:
+			found = true
+			id0 = k.ID
+			u0 := New0(0)
+			if gid == "" {
+				err := client.Get(c, k, u0)
+				if err != nil {
+					return id0, id1, gid, found, err
+				}
+				gid = u0.GoogleID
+			}
+		case k.Name != "":
+			found = true
+			id1 = k.Name
+			u1 := New1("")
+			if gid == "" {
+				err := client.Get(c, k, u1)
+				if err != nil {
+					return id0, id1, gid, found, err
+				}
+				gid = u1.GoogleID
+			}
+		}
 	}
-
-	u1 := New1("")
-	if err := client.Get(c, ks[0], u1); err != nil {
-		return nil, err
-	}
-
-	if strings.ToLower(u1.Email) == strings.ToLower(email) {
-		log.Debugf("found user: %#v", u1)
-		return u1, nil
-	}
-
-	return nil, errors.New("email does not match old entry")
+	return id0, id1, gid, found, nil
 }
 
 func addUnique(ks []*datastore.Key, k *datastore.Key) []*datastore.Key {
