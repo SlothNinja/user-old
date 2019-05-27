@@ -35,6 +35,7 @@ const fqdn = "www.slothninja.com"
 
 const (
 	GTMonster = "monsterid"
+	ProjectID = "user-slothninja-games"
 )
 
 var namespaceUUID = uuid.NewV5(uuid.NamespaceDNS, fqdn)
@@ -1158,7 +1159,7 @@ func Client(c *gin.Context) (*datastore.Client, error) {
 	// 	option.WithGRPCConnectionPool(50),
 	// }
 	// return datastore.NewClient(c, projectId, o1...)
-	return datastore.NewClient(c, "")
+	return datastore.NewClient(c, ProjectID)
 }
 
 func GetCUserHandler2(c *gin.Context) {
