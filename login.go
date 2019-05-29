@@ -59,17 +59,17 @@ func oauth2Config(c *gin.Context, path string, scopes ...string) *oauth2.Config 
 
 	log.Debugf("request: %#v", c.Request)
 
-	protocol := "http"
-	if c.Request.TLS != nil {
-		protocol = "https"
-	}
+	// protocol := "http"
+	// if c.Request.TLS != nil {
+	// 	protocol = "https"
+	// }
 
 	return &oauth2.Config{
 		ClientID:     "435340145701-t5o50sjq7hsbilopgreobhvrv30e1tj4.apps.googleusercontent.com",
 		ClientSecret: "Fe5f-Ht1V5_GohDEOS_TQOVc",
 		Endpoint:     google.Endpoint,
 		Scopes:       scopes,
-		RedirectURL:  fmt.Sprintf("%s://%s%s", protocol, c.Request.Host, path),
+		RedirectURL:  fmt.Sprintf("%s%s", c.Request.Referrer, path),
 	}
 }
 
