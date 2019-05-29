@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 
 	"bitbucket.org/SlothNinja/log"
 	"cloud.google.com/go/datastore"
@@ -21,6 +22,7 @@ import (
 const (
 	PORT        = "PORT"
 	DefaultPort = ":8080"
+	HOST        = "HOST"
 	userNewPath = "/#/new"
 )
 
@@ -69,7 +71,7 @@ func oauth2Config(c *gin.Context, path string, scopes ...string) *oauth2.Config 
 		ClientSecret: "Fe5f-Ht1V5_GohDEOS_TQOVc",
 		Endpoint:     google.Endpoint,
 		Scopes:       scopes,
-		RedirectURL:  fmt.Sprintf("%s%s", c.Request.Referrer, path),
+		RedirectURL:  fmt.Sprintf("%s%s", getHost(), path),
 	}
 }
 
@@ -84,17 +86,29 @@ func isDev() bool {
 func getPort() string {
 	port := os.Getenv(PORT)
 	if port != "" {
-		return port
+		if strings.HasPrefix(port, ":") {
+			return port
+		}
+		return ":" + port
+
 	}
 	port = DefaultPort
 	log.Printf("Defaulting to port %s", port)
 	return port
 }
 
+func getHost() string {
+	if isDev() {
+		return os.Getenv(HOST) + getPort()
+	}
+	return os.Getenv(HOST)
+}
+
 func Auth(path string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		log.Debugf("Entering")
 		defer log.Debugf("Exiting")
+
 		// Handle the exchange code to initiate a transport.
 		session := sessions.Default(c)
 		retrievedState := session.Get("state")
