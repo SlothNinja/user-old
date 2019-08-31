@@ -4,6 +4,8 @@ bitbucket.org/SlothNinja/log v0.0.0-20190402235934-21c011b9a8eb h1:hsE1KB+JGJL4O
 bitbucket.org/SlothNinja/log v0.0.0-20190402235934-21c011b9a8eb/go.mod h1:NrfFh+1hCuEgfS4B55UoDvw7q3/5yklamhz60E8Pg8c=
 bitbucket.org/SlothNinja/restful v0.0.0-20190401214758-b385392c0cbd h1:cmx6q8yhNe6aHgcaYyoskhA6afOtR7zkVa9mofN1CFc=
 bitbucket.org/SlothNinja/restful v0.0.0-20190401214758-b385392c0cbd/go.mod h1:hj3ciBtqXGazX8jWTiLt99MtU6UtdPVVuerj0VLQWMk=
+bitbucket.org/SlothNinja/user v0.0.8 h1:GC5cX3g8+JIJYcvcrNN1XMkxY8M3WLE8ZRmIBtw7oNg=
+bitbucket.org/SlothNinja/user v0.0.8/go.mod h1:wpsLAYSeZVXYBb5LrZ7wa6HmhsYTYao/d/fhxkqeBP4=
 bitbucket.org/pkg/inflect v0.0.0-20130829110746-8961c3750a47 h1:XDrztcXGcx7jow3UUE2dpYtdSWVUigoyn8G+shykEtw=
 bitbucket.org/pkg/inflect v0.0.0-20130829110746-8961c3750a47/go.mod h1:8Rt8gHhG+tKz8P3SoEzL/ZNVl25fPhMFKItv5HLIdtY=
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
