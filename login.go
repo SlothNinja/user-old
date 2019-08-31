@@ -98,9 +98,6 @@ func getPort() string {
 }
 
 func getHost() string {
-	if isDev() {
-		return os.Getenv(HOST) + getPort()
-	}
 	return os.Getenv(HOST)
 }
 

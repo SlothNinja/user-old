@@ -12,4 +12,8 @@ require (
 	github.com/go-martini/martini v0.0.0-20170121215854-22fa46961aab // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
 	go.chromium.org/gae v0.0.0-20190225082608-abcc82041b0d // indirect
+	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
+	google.golang.org/api v0.3.0
+	google.golang.org/appengine v1.4.0
+	google.golang.org/grpc v1.19.0
 )
