@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
@@ -9,14 +10,13 @@ import (
 	"os"
 	"strings"
 
-	"bitbucket.org/SlothNinja/log"
 	"cloud.google.com/go/datastore"
+	"github.com/SlothNinja/log"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-	"google.golang.org/appengine"
 )
 
 const (
@@ -115,7 +115,8 @@ func Auth(path string) gin.HandlerFunc {
 		}
 
 		log.Debugf("retrievedState: %#v", retrievedState)
-		ac := appengine.NewContext(c.Request)
+		// ac := appengine.NewContext(c.Request)
+		ac := context.Background()
 		conf := oauth2Config(c, path, scopes()...)
 		tok, err := conf.Exchange(ac, c.Query("code"))
 		if err != nil {
@@ -150,12 +151,20 @@ func Auth(path string) gin.HandlerFunc {
 		}
 		log.Debugf("info: %#v", uinfo)
 
-		id := ID(uinfo.Sub)
-		u, err := ByID(c, id)
+		id := id(uinfo.Sub)
+		u := New(id)
+		dsClient, err := Client(c)
+		if err != nil {
+			log.Errorf("Client error: %v", err)
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+
+		err = dsClient.Get(c, u.Key, &u)
 		if err == datastore.ErrNoSuchEntity {
-			u = New2(id)
+			u = New(id)
 			u.Email = uinfo.Email
-			err = u.To(session)
+			err = u.SaveTo(session)
 			if err != nil {
 				log.Errorf("session.Save error: %v", err)
 				c.AbortWithError(http.StatusBadRequest, err)
@@ -172,7 +181,7 @@ func Auth(path string) gin.HandlerFunc {
 			return
 		}
 
-		err = u.To(session)
+		err = u.SaveTo(session)
 		if err != nil {
 			log.Errorf("session.Save error: %v", err)
 			c.AbortWithError(http.StatusBadRequest, err)

@@ -1,13 +1,3 @@
-bitbucket.org/SlothNinja/gin-render v0.0.0-20190401221903-9110eb7fea98 h1:k4Z65hXFpBwj/CF4q2z2q9WJs0Alwe+yO5Wnb6K8aiU=
-bitbucket.org/SlothNinja/gin-render v0.0.0-20190401221903-9110eb7fea98/go.mod h1:imsuAaAiar7XVqj3/7vThCGxqhYCM3ueeEWr1akHKa0=
-bitbucket.org/SlothNinja/log v0.0.0-20190402235934-21c011b9a8eb h1:hsE1KB+JGJL4OyLCd9Zt/fdjY3Zy/Plh20VDhRepziA=
-bitbucket.org/SlothNinja/log v0.0.0-20190402235934-21c011b9a8eb/go.mod h1:NrfFh+1hCuEgfS4B55UoDvw7q3/5yklamhz60E8Pg8c=
-bitbucket.org/SlothNinja/restful v0.0.0-20190401214758-b385392c0cbd h1:cmx6q8yhNe6aHgcaYyoskhA6afOtR7zkVa9mofN1CFc=
-bitbucket.org/SlothNinja/restful v0.0.0-20190401214758-b385392c0cbd/go.mod h1:hj3ciBtqXGazX8jWTiLt99MtU6UtdPVVuerj0VLQWMk=
-bitbucket.org/SlothNinja/user v0.0.8 h1:GC5cX3g8+JIJYcvcrNN1XMkxY8M3WLE8ZRmIBtw7oNg=
-bitbucket.org/SlothNinja/user v0.0.8/go.mod h1:wpsLAYSeZVXYBb5LrZ7wa6HmhsYTYao/d/fhxkqeBP4=
-bitbucket.org/pkg/inflect v0.0.0-20130829110746-8961c3750a47 h1:XDrztcXGcx7jow3UUE2dpYtdSWVUigoyn8G+shykEtw=
-bitbucket.org/pkg/inflect v0.0.0-20130829110746-8961c3750a47/go.mod h1:8Rt8gHhG+tKz8P3SoEzL/ZNVl25fPhMFKItv5HLIdtY=
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.31.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
@@ -18,6 +8,8 @@ git.apache.org/thrift.git v0.12.0/go.mod h1:fPE2ZNJGynbRyZ4dJvy6G277gSllfV2HJqbl
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/Shopify/sarama v1.19.0/go.mod h1:FVkBWblsNy7DGZRfXLU0O9RCGt5g3g3yEuWXgklEdEo=
 github.com/Shopify/toxiproxy v2.1.4+incompatible/go.mod h1:OXgGpZ6Cli1/URJOF1DMxUHB2q5Ap20/P/eIdh4G0pI=
+github.com/SlothNinja/log v0.0.0-20190402235934-a7f47a2f3f3f h1:IXSNr+vptL3/3BBWirXsi5vM608fXQwSLkaLFJy3Rj8=
+github.com/SlothNinja/log v0.0.0-20190402235934-a7f47a2f3f3f/go.mod h1:Uk9TO1gBtrwPcAQCl7haiGhB8PJ26FjoD4Zm9tdcrwA=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
 github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239/go.mod h1:2FmKhYUyUczH0OGQWaF5ceTx0UBShxjsH6f8oGKYe2c=
@@ -28,8 +20,6 @@ github.com/bradfitz/go-smtpd v0.0.0-20170404230938-deb6d6237625/go.mod h1:HYsPBT
 github.com/bradfitz/gomemcache v0.0.0-20180710155616-bc664df96737/go.mod h1:PmM6Mmwb0LSuEubjR8N7PtNe1KxZLtOUHtbeikc5h60=
 github.com/bradleypeabody/gorilla-sessions-memcache v0.0.0-20181103040241-659414f458e1/go.mod h1:dkChI7Tbtx7H1Tj7TqGSZMOeGpMP5gLHtjroHd4agiI=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
-github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 h1:sDMmm+q/3+BukdIpxwO365v/Rbspp2Nt5XntgQRXq8Q=
-github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0/go.mod h1:4Zcjuz89kmFXt9morQgcfYZAYZ5n8WHjt81YYWIwtTM=
 github.com/coreos/go-systemd v0.0.0-20181012123002-c6f51f82210d/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -49,8 +39,6 @@ github.com/gliderlabs/ssh v0.1.1/go.mod h1:U7qILu1NlMHj9FlMhZLlkCdDnU1DBEAqr0aev
 github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8/go.mod h1:xkRDCp4j0OGD1HRkm4kmhM+pmpv3AKq5SU7GMg4oO/Q=
 github.com/go-kit/kit v0.8.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
 github.com/go-logfmt/logfmt v0.3.0/go.mod h1:Qt1PoO58o5twSAckw1HlFXLmHsOX5/0LbT9GBnD5lWE=
-github.com/go-martini/martini v0.0.0-20170121215854-22fa46961aab h1:xveKWz2iaueeTaUgdetzel+U7exyigDYBryyVfV/rZk=
-github.com/go-martini/martini v0.0.0-20170121215854-22fa46961aab/go.mod h1:/P9AEU963A2AYjv4d1V5eVL1CQbEJq6aCNHDDjibzu8=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/gofrs/uuid v3.2.0+incompatible h1:y12jRkkFxsd7GpqdSZ+/KCs/fJbqpEXSGd4+jfEaewE=
 github.com/gofrs/uuid v3.2.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
@@ -143,8 +131,6 @@ github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXf
 github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07/go.mod h1:kDXzergiv9cbyO7IOYJZWg1U88JhDg3PB6klq9Hg2pA=
 github.com/ugorji/go/codec v0.0.0-20181209151446-772ced7fd4c2 h1:EICbibRW4JNKMcY+LsWmuwob+CRS1BmdRdjphAm9mH4=
 github.com/ugorji/go/codec v0.0.0-20181209151446-772ced7fd4c2/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
-go.chromium.org/gae v0.0.0-20190225082608-abcc82041b0d h1:JKcdLpu97GURVDP+c29LnzlgnNayz9k1K7DLo09T8AM=
-go.chromium.org/gae v0.0.0-20190225082608-abcc82041b0d/go.mod h1:ypuIZj/TmtaQgUYPNNu0iKlsUkuv10PROeqHCNrqrog=
 go.opencensus.io v0.18.0/go.mod h1:vKdFvxhtzZ9onBp9VKHK8z/sRpBMnKAsufL7wlDrCOA=
 go.opencensus.io v0.19.1/go.mod h1:gug0GbSHa8Pafr0d2urOSgoXHZ6x/RUlaiT0d9pqb4A=
 go.opencensus.io v0.19.2 h1:ZZpq6xI6kv/LuE/5s5UQvBU5vMjvRnPb8PvJrIntAnc=
